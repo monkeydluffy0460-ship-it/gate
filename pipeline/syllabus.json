@@ -1,0 +1,78 @@
+{
+  "Engineering Mathematics": [
+    "Discrete mathematics: logic, sets, relations, functions, partial orders, lattices, groups",
+    "Combinatorics: counting, recurrence relations, generating functions, graph theory",
+    "Linear algebra: matrices, determinants, systems of linear equations, eigenvalues, eigenvectors",
+    "Calculus: limits, continuity, differentiability, maxima and minima, integration",
+    "Probability and statistics: random variables, distributions, expectation, variance, conditional probability"
+  ],
+  "Digital Logic": [
+    "Boolean algebra, logic gates, minimization",
+    "Combinational circuits: arithmetic circuits, code converters, multiplexers, decoders",
+    "Sequential circuits: latches, flip-flops, counters, registers",
+    "Number representation and computer arithmetic"
+  ],
+  "Computer Organization and Architecture": [
+    "Machine instructions and addressing modes",
+    "ALU, datapath, and control unit",
+    "Pipelining and hazards",
+    "Memory hierarchy: cache, main memory, secondary storage",
+    "I/O interface, interrupts, DMA",
+    "RISC and CISC architectures"
+  ],
+  "Programming and Data Structures": [
+    "Programming in C: pointers, arrays, functions, recursion, structures, unions",
+    "Stacks, queues, linked lists",
+    "Trees, binary search trees, heaps, balanced trees",
+    "Graphs and graph representations",
+    "Searching and sorting"
+  ],
+  "Algorithms": [
+    "Asymptotic analysis and complexity",
+    "Divide and conquer, greedy algorithms, dynamic programming",
+    "Graph algorithms: traversal, shortest paths, minimum spanning trees",
+    "Hashing and string algorithms",
+    "NP-completeness and approximation algorithms"
+  ],
+  "Theory of Computation": [
+    "Regular expressions and finite automata",
+    "Context-free grammars and pushdown automata",
+    "Regular and context-free language properties",
+    "Turing machines and undecidability"
+  ],
+  "Compiler Design": [
+    "Lexical analysis and finite automata",
+    "Parsing and context-free grammars",
+    "Syntax-directed translation and intermediate code generation",
+    "Runtime environments and code generation",
+    "Data-flow analysis and optimization"
+  ],
+  "Operating Systems": [
+    "Processes, threads, and inter-process communication",
+    "CPU scheduling and synchronization",
+    "Deadlocks",
+    "Memory management, virtual memory, paging",
+    "File systems and I/O systems"
+  ],
+  "Databases": [
+    "ER model and relational model",
+    "Relational algebra and SQL",
+    "Integrity constraints and normalization",
+    "Transactions, concurrency control, and recovery",
+    "File organization and indexing"
+  ],
+  "Computer Networks": [
+    "Network architecture, layering, and protocols",
+    "Data link layer: framing, error detection, MAC, Ethernet",
+    "Network layer: IP, addressing, routing, IPv4, IPv6",
+    "Transport layer: TCP, UDP, congestion control",
+    "Application layer: DNS, HTTP, email",
+    "Network security basics"
+  ],
+  "General Aptitude": [
+    "Verbal aptitude",
+    "Quantitative aptitude",
+    "Analytical aptitude",
+    "Spatial aptitude"
+  ]
+}
