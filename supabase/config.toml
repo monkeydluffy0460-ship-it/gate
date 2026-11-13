@@ -1,0 +1,2 @@
+[functions.explain-question]
+verify_jwt = true

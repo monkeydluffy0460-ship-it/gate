@@ -6,9 +6,7 @@ export const supabase = hasSupabaseConfig()
   : null;
 
 export async function signInWithEmail(email) {
-  if (!supabase) {
-    return { user: { email }, session: { user: { email } } };
-  }
+  if (!supabase) return { user: { email }, session: { user: { email } } };
   const { data, error } = await supabase.auth.signInWithOtp({ email });
   if (error) throw error;
   return data;

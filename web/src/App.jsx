@@ -12,67 +12,66 @@ import ResultPage from './pages/ResultPage';
 import ProgressPage from './pages/ProgressPage';
 import NotesPage from './pages/NotesPage';
 
-const STORAGE_KEYS = {
-  user: 'gate-demo-user',
-  attempt: 'gate-demo-attempt',
-  responses: 'gate-demo-responses',
-  theme: 'gate-theme'
+const STORAGE_KEYS = { user: 'gate-demo-user', attempt: 'gate-demo-attempt', responses: 'gate-demo-responses' };
+const generatedDemoQuestion = {
+  ...fakeQuestions[0],
+  id: 'ai-q-1',
+  qno: 1,
+  topic: 'Algorithms',
+  question_text: 'AI Practice (generated): For an array of n elements, what is the worst-case time complexity of merge sort?',
+  options: [
+    { label: 'A', value: 'A', text: 'O(n)' },
+    { label: 'B', value: 'B', text: 'O(n log n)' },
+    { label: 'C', value: 'C', text: 'O(log n)' },
+    { label: 'D', value: 'D', text: 'O(n²)' }
+  ],
+  answer: 'B',
+  answer_source: 'ai_unsure',
+  is_generated: true
 };
 
 function App() {
   const { darkMode, setDarkMode } = useDarkMode();
   const [user, setUser] = useState(() => JSON.parse(localStorage.getItem(STORAGE_KEYS.user) || 'null'));
   const [attempt, setAttempt] = useState(() => JSON.parse(localStorage.getItem(STORAGE_KEYS.attempt) || 'null'));
-  const [questions, setQuestions] = useState(() => fakeQuestions);
+  const [questions, setQuestions] = useState(fakeQuestions);
+  const [activeQuestions, setActiveQuestions] = useState(fakeQuestions);
   const navigate = useNavigate();
 
+  useEffect(() => { localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user)); }, [user]);
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
-  }, [user]);
-
-  useEffect(() => {
-    if (attempt) {
-      localStorage.setItem(STORAGE_KEYS.attempt, JSON.stringify(attempt));
-    } else {
-      localStorage.removeItem(STORAGE_KEYS.attempt);
-    }
+    if (attempt) localStorage.setItem(STORAGE_KEYS.attempt, JSON.stringify(attempt));
+    else localStorage.removeItem(STORAGE_KEYS.attempt);
   }, [attempt]);
-
-  useEffect(() => {
-    localStorage.setItem('gate-demo-questions', JSON.stringify(questions));
-  }, [questions]);
+  useEffect(() => { localStorage.setItem('gate-demo-questions', JSON.stringify(questions)); }, [questions]);
 
   async function handleLogin(email) {
     try {
       const { user: authUser } = await signInWithEmail(email);
       setUser({ email: authUser.email || email });
-      navigate('/');
-    } catch (error) {
-      setUser({ email });
-      navigate('/');
-    }
+    } catch { setUser({ email }); }
+    navigate('/');
   }
 
   async function handleLogout() {
-    try {
-      await signOut();
-    } catch {}
+    try { await signOut(); } catch { /* local demo logout remains available */ }
     setUser(null);
     localStorage.removeItem(STORAGE_KEYS.user);
     navigate('/login');
   }
 
   function createAttempt(config) {
-    const endsAt = Date.now() + config.minutes * 60 * 1000;
+    const candidates = config.mode === 'ai-practice'
+      ? [...questions.filter((question) => question.is_generated), generatedDemoQuestion]
+      : questions.filter((question) => !question.is_generated);
+    const selected = candidates.slice(0, Number(config.count) || candidates.length);
+    const runQuestions = selected.length ? selected : [generatedDemoQuestion];
+    setActiveQuestions(runQuestions);
     const newAttempt = {
-      id: crypto.randomUUID(),
-      user_id: user?.email || 'demo-user',
+      id: crypto.randomUUID(), user_id: user?.email || 'demo-user',
       started_at: new Date().toISOString(),
-      ends_at: new Date(endsAt).toISOString(),
-      submitted_at: null,
-      config,
-      score: 0,
-      violations: 0
+      ends_at: new Date(Date.now() + Number(config.minutes || 30) * 60_000).toISOString(),
+      submitted_at: null, config, score: 0, violations: 0
     };
     setAttempt(newAttempt);
     localStorage.setItem(STORAGE_KEYS.responses, JSON.stringify({}));
@@ -81,73 +80,31 @@ function App() {
   }
 
   function submitAttempt(finalResponses) {
-    const result = scoreAttempt(questions, finalResponses);
+    const result = scoreAttempt(activeQuestions, finalResponses);
     const updated = { ...attempt, score: result.total, submitted_at: new Date().toISOString(), result };
     setAttempt(updated);
     localStorage.setItem(STORAGE_KEYS.attempt, JSON.stringify(updated));
     navigate('/result');
   }
 
-  if (!user) {
-    return (
-      <Routes>
-        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
-      </Routes>
-    );
-  }
+  if (!user) return <Routes><Route path="/login" element={<LoginPage onLogin={handleLogin} />} /><Route path="*" element={<Navigate to="/login" replace />} /></Routes>;
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 transition-colors dark:bg-slate-950 dark:text-slate-100">
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-900/80">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-blue-500 px-2 py-1 text-sm font-bold text-white">GATE</div>
-            <span className="font-semibold">Mock Test Trainer</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setDarkMode((value) => !value)}
-              className="rounded-full border border-slate-300 px-3 py-1.5 text-sm dark:border-slate-700"
-            >
-              {darkMode ? 'Light' : 'Dark'}
-            </button>
-            <button onClick={handleLogout} className="rounded-full bg-slate-900 px-3 py-1.5 text-sm text-white dark:bg-slate-700">
-              Logout
-            </button>
-          </div>
+          <div className="flex items-center gap-3"><div className="rounded-lg bg-blue-500 px-2 py-1 text-sm font-bold text-white">GATE</div><span className="font-semibold">Mock Test Trainer</span></div>
+          <div className="flex items-center gap-3"><button onClick={() => setDarkMode((value) => !value)} className="rounded-full border border-slate-300 px-3 py-1.5 text-sm dark:border-slate-700">{darkMode ? 'Light' : 'Dark'}</button><button onClick={handleLogout} className="rounded-full bg-slate-900 px-3 py-1.5 text-sm text-white dark:bg-slate-700">Logout</button></div>
         </div>
       </header>
-
-      <nav className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-3 text-sm">
-          {[
-            ['/', 'Home'],
-            ['/setup', 'Test Setup'],
-            ['/progress', 'Progress'],
-            ['/notes', 'Notes']
-          ].map(([to, label]) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `rounded-full px-3 py-2 ${isActive ? 'bg-blue-500 text-white' : 'text-slate-600 dark:text-slate-300'}`
-              }
-            >
-              {label}
-            </NavLink>
-          ))}
-        </div>
-      </nav>
-
+      <nav className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900"><div className="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-3 text-sm">{[['/', 'Home'], ['/setup', 'Test Setup'], ['/progress', 'Progress'], ['/notes', 'Notes']].map(([to, label]) => <NavLink key={to} to={to} className={({ isActive }) => `rounded-full px-3 py-2 ${isActive ? 'bg-blue-500 text-white' : 'text-slate-600 dark:text-slate-300'}`}>{label}</NavLink>)}</div></nav>
       <main className="mx-auto max-w-6xl px-4 py-6">
         <Routes>
           <Route path="/" element={<HomePage questions={questions} onCreateAttempt={createAttempt} user={user} />} />
           <Route path="/setup" element={<TestSetupPage onCreateAttempt={createAttempt} />} />
-          <Route path="/test" element={<TestPage attempt={attempt} questions={questions} onSubmit={submitAttempt} />} />
-          <Route path="/result" element={<ResultPage attempt={attempt} questions={questions} />} />
-          <Route path="/progress" element={<ProgressPage />} />
-          <Route path="/notes" element={<NotesPage />} />
+          <Route path="/test" element={<TestPage attempt={attempt} questions={activeQuestions} onSubmit={submitAttempt} />} />
+          <Route path="/result" element={<ResultPage attempt={attempt} questions={activeQuestions} />} />
+          <Route path="/progress" element={<ProgressPage />} /><Route path="/notes" element={<NotesPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
