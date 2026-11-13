@@ -1,0 +1,7 @@
+PyMuPDF
+pdfplumber
+pytesseract
+groq
+pydantic
+supabase
+python-dotenv
