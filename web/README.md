@@ -1,14 +1,17 @@
 # GATE Mock Test Trainer
 
-This Vite + React + Tailwind app is the mobile-first frontend for the GATE training workflow.
+This Vite + React app is the mobile-first frontend for the GATE training workflow.
 
 ## Local development
 
 ```bash
 cd web
 npm install
+cp .env.example .env.local
 npm run dev
 ```
+
+Fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env.local`. The browser app must use only the Supabase anon/publishable key and rely on RLS; never put the service-role key or Groq secret in this directory or in a `VITE_` variable.
 
 ## Production build
 
@@ -16,13 +19,4 @@ npm run dev
 npm run build
 ```
 
-## Environment variables
-
-Create a `.env.local` file with at least:
-
-```bash
-VITE_SUPABASE_URL=https://<project-ref>.supabase.co
-VITE_SUPABASE_ANON_KEY=<anon-key>
-```
-
-The app falls back to a local demo state when Supabase config is missing.
+Vercel deployment settings, Supabase setup, environment variables, and PWA phone installation are documented in the repository root's [DEPLOY.md](../DEPLOY.md).

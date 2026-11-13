@@ -7,25 +7,29 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['vite.svg'],
+      includeAssets: ['pwa-192x192.svg', 'pwa-512x512.svg'],
       manifest: {
-        name: 'GATE Mock Test Trainer',
-        short_name: 'GateTest',
+        name: 'GATE 2027 Mock Test Trainer',
+        short_name: 'GATE Trainer',
+        description: 'Mobile-first GATE CS & IT mock test and revision trainer.',
         theme_color: '#0b1020',
         background_color: '#0b1020',
         display: 'standalone',
+        orientation: 'portrait',
         scope: '/',
         start_url: '/',
         icons: [
           {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
+            src: '/pwa-192x192.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any'
           },
           {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
+            src: '/pwa-512x512.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'maskable'
           }
         ]
       }
